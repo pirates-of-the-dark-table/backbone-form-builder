@@ -15,7 +15,7 @@
 
 ````javascript
 
-form = new Backbone.FormBuilder({
+form = new Backbone.FormBuilder.Form({
   // The model instance to be bound to
   model:    model,
   // The success function that will be fired when the model can be saved
@@ -39,6 +39,14 @@ form.addField('password', 'password',
 
 // This will create a single text field without any validations.
 form.addField('biography', 'text_area'});
+
+// This will create a submit button, with the label "Save"
+form.addButton('submit', "Save")
+
+// This will create a <button> tag, with the text "Click me!". The callback will be called when the button is clicked.
+form.addButton('base', "Click me!", function() {
+    console.log("You clicked me!");
+});
 
 ````
 
