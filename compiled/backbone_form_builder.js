@@ -50,13 +50,20 @@
     };
 
     Form.prototype.formData = function() {
-      var field, fields, result, value, _i, _len;
+      var field, fields, md, result, value, _i, _len;
       fields = $(this.el).serializeArray();
       result = {};
       for (_i = 0, _len = fields.length; _i < _len; _i++) {
         field = fields[_i];
         value = field.value || "";
-        result[field.name] = value;
+        if (md = field.name.match(/^([^\[]+)\[([^\]]+)\]$/)) {
+          if (!result[md[1]]) {
+            result[md[1]] = {};
+          }
+          result[md[1]][md[2]] = value;
+        } else {
+          result[field.name] = value;
+        }
       }
       return result;
     };
@@ -69,7 +76,12 @@
       form_builder = this;
       key = this.modelKey();
       data = {};
-      data[key] = this.formData();
+      if (key) {
+        data[key] = this.formData();
+      } else {
+        data = this.formData();
+      }
+      console.log('save', data);
       return this.model.save(data, {
         success: options.success,
         error: function(model, response) {
@@ -174,7 +186,15 @@
     };
 
     Base.prototype.value = function() {
-      return this.model.get(this.name);
+      var md, nestedObject;
+      if (md = this.name.match(/^([^\[]+)\[([^\]]+)\]$/)) {
+        nestedObject = this.model.get(md[1]);
+        if (nestedObject) {
+          return nestedObject[md[2]];
+        }
+      } else {
+        return this.model.get(this.name);
+      }
     };
 
     Base.prototype.input = function(name, value) {

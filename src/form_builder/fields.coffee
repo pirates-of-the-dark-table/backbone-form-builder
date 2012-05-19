@@ -14,7 +14,12 @@ class Backbone.FormBuilder.Fields.Base extends Backbone.View
     $(@el).append input
 
   value: ->
-    @model.get(@name)
+    if md = @name.match(/^([^\[]+)\[([^\]]+)\]$/)
+      nestedObject = @model.get(md[1])
+      if nestedObject
+        nestedObject[md[2]]
+    else
+      @model.get(@name)
 
   input: (name, value) ->
     input = $('<input />')

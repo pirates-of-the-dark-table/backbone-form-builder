@@ -18,14 +18,24 @@ class Backbone.FormBuilder.Form extends Backbone.View
     result = {}
     for field in fields
       value = field.value || ""
-      result[field.name] = value
+      # handle nested field (e.g. n[given-name] #=> {"n":{"given-name":"..."}}):
+      if md = field.name.match(/^([^\[]+)\[([^\]]+)\]$/)
+        result[md[1]] = {} unless result[md[1]]
+        result[md[1]][md[2]] = value
+      else
+        result[field.name] = value
     result
 
   save: (options = {}) ->
     form_builder = @
     key = @modelKey()
     data = {}
-    data[key] = @formData()
+    if key
+      data[key] = @formData()
+    else
+      data = @formData()
+
+    console.log('save', data);
 
     @model.save data,
       success: options.success
