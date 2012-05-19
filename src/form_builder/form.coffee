@@ -35,8 +35,6 @@ class Backbone.FormBuilder.Form extends Backbone.View
     else
       data = @formData()
 
-    console.log('save', data);
-
     @model.save data,
       success: options.success
       error: (model, response) ->
