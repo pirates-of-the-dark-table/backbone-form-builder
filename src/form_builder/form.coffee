@@ -4,6 +4,7 @@ class Backbone.FormBuilder.Form extends Backbone.View
 
   initialize: (options) ->
     @fields ||= []
+    @buttons ||= []
     callbacks =
       success: options.success
       error: options.error
@@ -41,6 +42,9 @@ class Backbone.FormBuilder.Form extends Backbone.View
     for field in @fields
       field.render()
       $(@el).append(field.el)
+    for button in @buttons
+      button.render()
+      $(@el).append(button.el)
     @
 
   renderErrors: (errors) ->
@@ -53,5 +57,12 @@ class Backbone.FormBuilder.Form extends Backbone.View
     field.name = name
     @fields.push field
     field
+
+  addButton: (type, label, callback, options) ->
+    button = new Backbone.FormBuilder.Buttons[Backbone.FormBuilder.camelize type](options)
+    button.callback = callback
+    button.label = label
+    @buttons.push button
+    button
 
   parseErrors: Backbone.FormBuilder.parseErrors

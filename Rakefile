@@ -4,9 +4,21 @@ task :default => :compile do
   exec "mocha --reporter dot #{files.join " "}"
 end
 
-task :compile do
-  files = Dir.glob("src/**/*.coffee").reverse
-  `coffee --lint --join compiled/backbone_form_builder.js --compile --output compiled #{files.join(" ")}`
+task :compile => [:compile_scripts, :compress]
+
+task :compile_scripts do
+  files = [
+    'form_builder',
+    'form_builder/form',
+    'form_builder/fields',
+    'form_builder/fields/*',
+    'form_builder/buttons',
+    'form_builder/buttons/*'
+  ].map { |path| Dir.glob("src/#{path}.coffee") }.flatten
+  system("coffee --lint --join compiled/backbone_form_builder.js --compile --output compiled #{files.join(" ")}")
+end
+
+task :compress do
   if File.exists?('compiled/backbone_form_builder.min.js')
     `rm compiled/backbone_form_builder.min.js`
   end
